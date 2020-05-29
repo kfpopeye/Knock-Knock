@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RevitAddIns>
+  <AddIn Type="Application">
+    <Name>Knock Knock</Name>
+    <Assembly>C:\Users\User\Documents\pkh Lineworks\Projects\KnockKnock 2020\KnockKnock\bin\x64\Release\KnockKnock_Locked\KnockKnock.dll</Assembly>
+    <AddInId>6f5ba375-300e-4716-9568-46d1944149df</AddInId>
+    <FullClassName>KnockKnock.KnockKnockApp</FullClassName>
+    <VendorId>PKHL</VendorId>
+    <VendorDescription>pkh Lineworks, www.pkhlineworks.ca</VendorDescription>
+  </AddIn>
+</RevitAddIns>

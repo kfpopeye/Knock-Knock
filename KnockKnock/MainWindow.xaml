@@ -1,0 +1,471 @@
+﻿<Window x:Class="KnockKnock.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:properties="clr-namespace:KnockKnock.Properties"
+        xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:src="clr-namespace:KnockKnock" mc:Ignorable="d"
+        Title="Knock Knock"  Height="600" Width="1100" Loaded="Window_Loaded" WindowStartupLocation="CenterOwner">
+    <Window.Resources>
+        <VisualBrush x:Key="HasChangedVBrush" Stretch="Uniform" AlignmentX="Center">
+            <VisualBrush.Visual>
+                <Canvas Height="12" Width="12">
+                    <Ellipse Stroke="Salmon" StrokeThickness="2" Canvas.Left="1" Canvas.Top="1" Width="10" Height="10" />
+                </Canvas>
+            </VisualBrush.Visual>
+        </VisualBrush>
+
+        <VisualBrush x:Key="IsCheckedBrush" Stretch="Uniform" AlignmentX="Center">
+            <VisualBrush.Visual>
+                <Canvas Height="12" Width="12">
+                    <Line Stroke="LightGreen" StrokeThickness="3" X1="0" Y1="6" X2="6" Y2="12" />
+                    <Line Stroke="LightGreen" StrokeThickness="3" X1="6" Y1="12" X2="12" Y2="0" />
+                </Canvas>
+            </VisualBrush.Visual>
+        </VisualBrush>
+
+        <VisualBrush x:Key="ReadOnlyBrush" Stretch="Uniform" AlignmentX="Center">
+            <VisualBrush.Visual>
+                <Canvas Height="12" Width="12">
+                    <Ellipse Stroke="#FFE08326" StrokeThickness="2" Canvas.Left="1" Canvas.Top="1" Width="10" Height="10" />
+                    <Rectangle Fill="#FFE08326" Width="12" Height="6" Canvas.Left="0" Canvas.Top="6" />
+                </Canvas>
+            </VisualBrush.Visual>
+        </VisualBrush>
+
+        <!--brushes for comments-->
+        <VisualBrush x:Key="HasChangedVBrush_L" Stretch="Uniform" AlignmentX="Right">
+            <VisualBrush.Visual>
+                <Canvas Height="12" Width="12">
+                    <Ellipse Stroke="Salmon" StrokeThickness="2" Canvas.Left="1" Canvas.Top="1" Width="10" Height="10" />
+                </Canvas>
+            </VisualBrush.Visual>
+        </VisualBrush>
+
+        <VisualBrush x:Key="IsCheckedBrush_L" Stretch="Uniform" AlignmentX="Right">
+            <VisualBrush.Visual>
+                <Canvas Height="12" Width="12">
+                    <Line Stroke="LightGreen" StrokeThickness="3" X1="0" Y1="6" X2="6" Y2="12" />
+                    <Line Stroke="LightGreen" StrokeThickness="3" X1="6" Y1="12" X2="12" Y2="0" />
+                </Canvas>
+            </VisualBrush.Visual>
+        </VisualBrush>
+
+        <VisualBrush x:Key="ReadOnlyBrush_L" Stretch="Uniform" AlignmentX="Right">
+            <VisualBrush.Visual>
+                <Canvas Height="12" Width="12">
+                    <Ellipse Stroke="#FFE08326" StrokeThickness="2" Canvas.Left="1" Canvas.Top="1" Width="10" Height="10" />
+                    <Rectangle Fill="#FFE08326" Width="12" Height="6" Canvas.Left="0" Canvas.Top="6" />
+                </Canvas>
+            </VisualBrush.Visual>
+        </VisualBrush>
+    </Window.Resources>
+    <Window.CommandBindings>
+        <CommandBinding Command="src:CustomCommands.ShowDoor" CanExecute="IfDoorSelected_CanExecute" Executed="ShowDoorCommand_Executed" />
+
+        <CommandBinding Command="src:CustomCommands.UncheckDoor" CanExecute="IfDoorSelected_CanExecute" Executed="UncheckDoorCommand_Executed" />
+        <CommandBinding Command="src:CustomCommands.ClearDoor" CanExecute="IfDoorSelected_CanExecute" Executed="ClearDoorCommand_Executed" />
+        <CommandBinding Command="src:CustomCommands.UndoDoor" CanExecute="IfDoorSelected_CanExecute" Executed="UndoDoorCommand_Executed" />
+        <CommandBinding Command="src:CustomCommands.UnkeyDoor" CanExecute="UnkeyDoor_CanExecute" Executed="UnkeyDoorCommand_Executed" />
+
+        <CommandBinding Command="src:CustomCommands.UncheckAll" CanExecute="Always_CanExecute" Executed="UncheckAllCommand_Executed" />
+        <CommandBinding Command="src:CustomCommands.ClearAll" CanExecute="Always_CanExecute" Executed="ClearAllCommand_Executed" />
+        <CommandBinding Command="src:CustomCommands.UndoAll" CanExecute="Always_CanExecute" Executed="UndoAllCommand_Executed" />
+
+        <CommandBinding Command="src:CustomCommands.OK" CanExecute="Always_CanExecute" Executed="OKCommand_Executed" />
+        <CommandBinding Command="src:CustomCommands.Settings" CanExecute="Always_CanExecute" Executed="SettingsCommand_Executed" />
+        <CommandBinding Command="src:CustomCommands.Help" CanExecute="Always_CanExecute" Executed="HelpCommand_Executed" />
+
+        <CommandBinding Command="src:CustomCommands.CheckParameter" CanExecute="IfDoorSelected_CanExecute" Executed="CheckParameterCommand_Executed" />
+
+        <CommandBinding Command="ApplicationCommands.Cut" />
+    </Window.CommandBindings>
+    <DockPanel>
+        <ToolBarTray DockPanel.Dock="Top">
+            <ToolBarTray.Resources>
+                <Style x:Key="ButtonStyle" TargetType="Button">
+                    <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=Command.Text}"/>
+                    <Setter Property="Content" Value="{Binding RelativeSource={RelativeSource Self}, Path=Command.Name}"/>
+                </Style>
+            </ToolBarTray.Resources>
+            <ToolBar BandIndex="0">
+                <Button Style="{StaticResource ButtonStyle}" Command="src:CustomCommands.ShowDoor" />
+                <Border BorderBrush="Black" BorderThickness="0">
+                    <ComboBox x:Name="PlanViewCB" Background="White" MinWidth="75" SelectionChanged="ComboBox_SelectionChanged">Change View</ComboBox>
+                </Border>
+            </ToolBar>
+            <ToolBar BandIndex="1">
+                <TextBox x:Name="FilterTB" MinWidth="75" BorderThickness="1" BorderBrush="Black" KeyDown="FilterTB_KeyDown" GotFocus="FilterTB_GotFocus" ToolTip="Filters out door marks using wildcards. See help for more information.">Filter</TextBox>
+                <CheckBox x:Name="ShowUnmarkedCB" Click="ShowUnmarkedCB_Click">Show Unmarked</CheckBox>
+                <CheckBox x:Name="ShowDemolishedCB" Click="ShowUnmarkedCB_Click">Show Demolished</CheckBox>
+            </ToolBar>
+            <ToolBar BandIndex="3">
+                <Button Style="{StaticResource ButtonStyle}" Command="src:CustomCommands.UncheckDoor" />
+                <Button Style="{StaticResource ButtonStyle}" Command="src:CustomCommands.ClearDoor" />
+                <Button Style="{StaticResource ButtonStyle}" Command="src:CustomCommands.UndoDoor" />
+                <Button Style="{StaticResource ButtonStyle}" Command="src:CustomCommands.UnkeyDoor" />
+            </ToolBar>
+            <ToolBar BandIndex="4">
+                <Button Style="{StaticResource ButtonStyle}" Command="src:CustomCommands.UncheckAll" />
+                <Button Style="{StaticResource ButtonStyle}" Command="src:CustomCommands.ClearAll" />
+                <Button Style="{StaticResource ButtonStyle}" Command="src:CustomCommands.UndoAll" />
+            </ToolBar>
+            <ToolBar BandIndex="5">
+                <Button Style="{StaticResource ButtonStyle}" Command="src:CustomCommands.OK" />
+                <Button Style="{StaticResource ButtonStyle}" Command="src:CustomCommands.Settings" />
+                <Button Style="{StaticResource ButtonStyle}" Command="src:CustomCommands.Help" />
+            </ToolBar>
+        </ToolBarTray>
+
+        <StatusBar DockPanel.Dock="Bottom" Height="24">
+            <StatusBarItem>
+                <TextBlock x:Name="countTB" Margin="0,0,10,0">Showing 10 doors</TextBlock>
+            </StatusBarItem>
+            <Separator/>
+            <StatusBarItem>
+                <TextBlock x:Name="phaseTB">Editing Phase</TextBlock>
+            </StatusBarItem>
+            <Separator/>
+            <StatusBarItem>
+                <CheckBox x:Name="extendedDataCB" IsChecked="False" Click="extendedDataCB_Click">Show extended data</CheckBox>
+            </StatusBarItem>
+            <Separator/>
+            <StatusBarItem>
+                <StackPanel Orientation="Horizontal">
+                    <Canvas Width="12" Background="{StaticResource HasChangedVBrush}" />
+                    <TextBlock Margin="2,0,10,0">Has changes</TextBlock>
+                    <Canvas Width="12" Background="{StaticResource IsCheckedBrush}" />
+                    <TextBlock Margin="2,0,10,0">Marked checked</TextBlock>
+                    <Canvas Width="12" Background="{StaticResource ReadOnlyBrush}" />
+                    <TextBlock Margin="2,0,10,0">Read only</TextBlock>
+                </StackPanel>
+            </StatusBarItem>
+        </StatusBar>
+
+        <DataGrid x:Name="_myDataGrid" AutoGenerateColumns="False" SelectionMode="Single" CanUserResizeRows="False" CanUserResizeColumns="False" Width="Auto" ColumnWidth="SizeToCells"
+                   PreparingCellForEdit="_myDataGrid_PreparingCellForEdit" CellEditEnding="_myDataGrid_CellEditEnding" PreviewKeyDown="_myDataGrid_PreviewKeyDown"
+                  BorderBrush="Black" MinColumnWidth="24" MinWidth="600" MinHeight="300" Sorting="_myDataGrid_Sorting" RowDetailsVisibilityMode="Collapsed">
+            <DataGrid.Resources>
+                <src:CommentList x:Key="_cmmntslst" />
+                <src:KeyStateConverter x:Key="_keystateconverter" />
+                <src:CalculateTextWidth x:Key="textwidthconverter"/>
+                <src:InvertBooleanConverter x:Key="negateValue" />
+                <src:ConvertToPixelConverter x:Key="sizeConverter" />
+
+                <DataTemplate x:Key="RotatedHeaderTemplate">
+                    <TextBlock Text="{Binding}" FontFamily="{Binding Source={x:Static properties:Settings.Default}, Path=HeaderFont.FontFamily.Name}"
+                               FontSize="{Binding Source={x:Static properties:Settings.Default}, Path=HeaderFont, Converter={StaticResource sizeConverter}}">
+                        <TextBlock.LayoutTransform>
+                            <RotateTransform Angle="-90" />
+                        </TextBlock.LayoutTransform>
+                    </TextBlock>
+                </DataTemplate>
+
+                <Style x:Key="ParameterHeaderStyle" TargetType="DataGridColumnHeader">
+                    <Setter Property="Background" >
+                        <Setter.Value>
+                            <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
+                                <GradientStop Color="#FF64CF3C" Offset="0"/>
+                                <GradientStop Color="White" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Setter.Value>
+                    </Setter>
+                    <Setter Property="BorderBrush" Value="Black" />
+                    <Setter Property="BorderThickness" Value="1,0,0,1"/>
+                    <Setter Property="HorizontalContentAlignment" Value="Center" />
+                    <Setter Property="VerticalContentAlignment" Value="Bottom" />
+                    <Setter Property="Padding" Value="0,0,0,3"/>
+                    <Setter Property="ContentTemplate" Value="{StaticResource RotatedHeaderTemplate}" />
+                </Style>
+
+                <Style x:Key="TextColumnStyle" TargetType="{x:Type DataGridCell}">
+                    <Setter Property="Padding" Value="2,0" />
+                    <Setter Property="Width" Value="Auto" />
+                    <Setter Property="FontFamily" Value="{Binding Source={x:Static properties:Settings.Default}, Path=ScheduleFont.FontFamily.Name}" />
+                    <Setter Property="FontSize" Value="{Binding Source={x:Static properties:Settings.Default}, Path=ScheduleFont, Converter={StaticResource sizeConverter}}" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Path=IsChecked}" Value="True">
+                            <Setter Property="Background" Value="{StaticResource IsCheckedBrush}" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Path=IsReadOnly}" Value="True">
+                            <Setter Property="Background" Value="{StaticResource ReadOnlyBrush}" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Path=HasChanged}" Value="True">
+                            <Setter Property="Background" Value="{StaticResource HasChangedVBrush}" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+
+                <Style x:Key="ParameterStringTextBoxStyle" TargetType="{x:Type TextBox}">
+                    <Setter Property="FontFamily" Value="{Binding Source={x:Static properties:Settings.Default}, Path=ScheduleFont.FontFamily.Name}" />
+                    <Setter Property="FontSize" Value="{Binding Source={x:Static properties:Settings.Default}, Path=ScheduleFont, Converter={StaticResource sizeConverter}}" />
+                    <Setter Property="IsReadOnly" Value="False" />
+                    <Setter Property="BorderThickness" Value="2" />
+                    <Setter Property="BorderBrush" Value="Black" />
+                    <Setter Property="Width" Value="Auto" />
+                    <Setter Property="MinHeight" Value="12" />
+                    <Setter Property="TextAlignment" Value="Center" />
+                    <Setter Property="HorizontalAlignment" Value="Stretch" />
+                    <Setter Property="Tag" Value="{Binding Id}" />
+                    <Setter Property="Text" Value="{Binding Value}" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Path=IsChecked}" Value="True">
+                            <Setter Property="Background" Value="{StaticResource IsCheckedBrush}" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Path=IsReadOnly}" Value="True">
+                            <Setter Property="IsReadOnly" Value="True" />
+                            <Setter Property="Background" Value="{StaticResource ReadOnlyBrush}" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Path=HasChanged}" Value="True">
+                            <Setter Property="Background" Value="{StaticResource HasChangedVBrush}" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+
+                <Style x:Key="ParameterStringTextBlockStyle" TargetType="{x:Type TextBlock}">
+                    <Setter Property="FontFamily" Value="{Binding Source={x:Static properties:Settings.Default}, Path=ScheduleFont.FontFamily.Name}" />
+                    <Setter Property="FontSize" Value="{Binding Source={x:Static properties:Settings.Default}, Path=ScheduleFont, Converter={StaticResource sizeConverter}}" />
+                    <Setter Property="MinHeight" Value="12" />
+                    <Setter Property="Padding" Value="2,0,0,0"/>
+                    <Setter Property="TextAlignment" Value="Left" />
+                    <Setter Property="TextWrapping" Value="NoWrap"/>
+                    <Setter Property="Tag" Value="{Binding Id}" />
+                    <Setter Property="Text" Value="{Binding Value}" />
+                    <Setter Property="Width" Value="Auto"/>
+                    <Setter Property="MinWidth">
+                        <Setter.Value>
+                            <MultiBinding Converter="{StaticResource textwidthconverter}">
+                                <Binding Path="Value" />
+                                <Binding RelativeSource="{RelativeSource Mode=Self}"/>
+                            </MultiBinding>
+                        </Setter.Value>
+                    </Setter>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Path=IsChecked}" Value="True">
+                            <Setter Property="Background" Value="{StaticResource IsCheckedBrush}" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Path=IsReadOnly}" Value="True">
+                            <Setter Property="Background" Value="{StaticResource ReadOnlyBrush}" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Path=HasChanged}" Value="True">
+                            <Setter Property="Background" Value="{StaticResource HasChangedVBrush}" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+
+                <Style x:Key="ParameterStringBorderStyle" TargetType="{x:Type Border}">
+                    <Setter Property="BorderThickness" Value="2" />
+                    <Setter Property="BorderBrush" Value="Black" />
+                    <Setter Property="Width" Value="Auto" />
+                    <Setter Property="MinHeight" Value="12" />
+                </Style>
+
+                <Style x:Key="ParameterCheckboxStyle" TargetType="{x:Type CheckBox}">
+                    <Setter Property="Tag" Value="{Binding Id}" />
+                    <Setter Property="IsChecked" Value="{Binding YesNoState}" />
+                    <Setter Property="Width" Value="Auto" />
+                    <Setter Property="HorizontalAlignment" Value="Center" />
+                    <Setter Property="VerticalAlignment" Value="Center" />
+                    <Setter Property="BorderThickness" Value="10" />
+                    <Setter Property="Background" Value="White"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Path=IsChecked}" Value="True">
+                            <Setter Property="Background" Value="#FF28EA28" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Path=IsReadOnly}" Value="True">
+                            <Setter Property="Background" Value="#FFE08326" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Path=HasChanged}" Value="True">
+                            <Setter Property="Background" Value="#FFFF3821" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+
+                <Style x:Key="ParameterTextBlockStyle" TargetType="{x:Type TextBlock}">
+                    <Setter Property="IsHitTestVisible" Value="False" />
+                    <Setter Property="Tag" Value="{Binding Id}" />
+                    <Setter Property="Text" Value="{Binding Value}" />
+                    <Setter Property="Background" Value="Transparent" />
+                    <Setter Property="Width" Value="Auto" />
+                    <Setter Property="TextAlignment" Value="Center" />
+                    <Setter Property="VerticalAlignment" Value="Center" />
+                    <Setter Property="Padding" Value="2" />
+                    <Setter Property="FontFamily" Value="{Binding Source={x:Static properties:Settings.Default}, Path=ScheduleFont.FontFamily.Name}" />
+                    <Setter Property="FontSize" Value="{Binding Source={x:Static properties:Settings.Default}, Path=ScheduleFont, Converter={StaticResource sizeConverter}}" />
+                    <Setter Property="FontWeight" Value="Bold" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Path=IsChecked}" Value="True">
+                            <Setter Property="Background" Value="{StaticResource IsCheckedBrush}" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Path=IsReadOnly}" Value="True">
+                            <Setter Property="Background" Value="{StaticResource ReadOnlyBrush}" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Path=HasChanged}" Value="True">
+                            <Setter Property="Background" Value="{StaticResource HasChangedVBrush}" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+
+                <Style x:Key="ExtendedDataTextBlockStyle" TargetType="{x:Type TextBlock}">
+                    <Setter Property="FontFamily" Value="{Binding Source={x:Static properties:Settings.Default}, Path=ScheduleFont.FontFamily.Name}" />
+                    <Setter Property="FontSize" Value="{Binding Source={x:Static properties:Settings.Default}, Path=ScheduleFont, Converter={StaticResource sizeConverter}}" />
+                </Style>
+
+                <Style x:Key="ParameterGridStyle" TargetType="{x:Type Grid}">
+                    <Setter Property="Tag" Value="{Binding Id}" />
+                    <Setter Property="Background" Value="Transparent" />
+                    <Setter Property="Margin" Value="0" />
+                    <Setter Property="HorizontalAlignment" Value="Stretch" />
+                    <Setter Property="VerticalAlignment" Value="Stretch" />
+                </Style>
+
+                <Style x:Key="CommentTextBlockStyle" TargetType="{x:Type TextBlock}">
+                    <Setter Property="FontFamily" Value="{Binding Source={x:Static properties:Settings.Default}, Path=ScheduleFont.FontFamily.Name}" />
+                    <Setter Property="FontSize" Value="{Binding Source={x:Static properties:Settings.Default}, Path=ScheduleFont, Converter={StaticResource sizeConverter}}" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Path=IsCommentChecked}" Value="True">
+                            <Setter Property="Background" Value="{StaticResource IsCheckedBrush_L}" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Path=IsCommentReadOnly}" Value="True">
+                            <Setter Property="Background" Value="{StaticResource ReadOnlyBrush_L}" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Path=hasNewComment}" Value="True">
+                            <Setter Property="Background" Value="{StaticResource HasChangedVBrush_L}" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+
+                <Style x:Key="MenuItemStyle" TargetType="MenuItem">
+                    <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=Command.Text}"/>
+                    <Setter Property="Header" Value="{Binding RelativeSource={RelativeSource Self}, Path=Command.Name}"/>
+                </Style>
+
+                <ContextMenu x:Key="RowContextMenu">
+                    <MenuItem Style="{StaticResource MenuItemStyle}" Command="src:CustomCommands.ShowDoor" />
+                    <MenuItem Style="{StaticResource MenuItemStyle}" Command="src:CustomCommands.UncheckDoor" />
+                    <MenuItem Style="{StaticResource MenuItemStyle}" Command="src:CustomCommands.ClearDoor" />
+                    <MenuItem Style="{StaticResource MenuItemStyle}" Command="src:CustomCommands.UndoDoor" />
+                    <MenuItem Style="{StaticResource MenuItemStyle}" Command="src:CustomCommands.UnkeyDoor" />
+                </ContextMenu>
+
+                <ContextMenu x:Key="TextBoxContextMenu">
+                    <MenuItem Style="{StaticResource MenuItemStyle}" Command="src:CustomCommands.CheckParameter" />
+                    <MenuItem Style="{StaticResource MenuItemStyle}" Command="ApplicationCommands.Cut" />
+                    <MenuItem Style="{StaticResource MenuItemStyle}" Command="ApplicationCommands.Copy" />
+                    <MenuItem Style="{StaticResource MenuItemStyle}" Command="ApplicationCommands.Paste" />
+                </ContextMenu>
+
+                <DataGridTemplateColumn x:Key="CommentColumnTemplate" MinWidth="300" Width="*" IsReadOnly="False"> 
+                    <DataGridTemplateColumn.HeaderStyle>
+                        <Style TargetType="DataGridColumnHeader">
+                            <Setter Property="Padding" Value="3" />
+                            <Setter Property="VerticalContentAlignment"  Value="Bottom" />
+                            <Setter Property="HorizontalContentAlignment" Value="Left" />
+                            <Setter Property="Background" >
+                                <Setter.Value>
+                                    <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
+                                        <GradientStop Color="#FF64CF3C" Offset="0"/>
+                                        <GradientStop Color="White" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Setter.Value>
+                            </Setter>
+                            <Setter Property="BorderBrush" Value="Black" />
+                            <Setter Property="BorderThickness" Value="0,0,0,1"/>
+                            <Setter Property="FontFamily" Value="{Binding Source={x:Static properties:Settings.Default}, Path=HeaderFont.FontFamily.Name}" />
+                            <Setter Property="FontSize" Value="{Binding Source={x:Static properties:Settings.Default}, Path=HeaderFont, Converter={StaticResource sizeConverter}}" />
+                        </Style>
+                    </DataGridTemplateColumn.HeaderStyle>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding doorComment}" ToolTip="{Binding doorComment}" Style="{StaticResource CommentTextBlockStyle}"
+                                       TextTrimming="CharacterEllipsis" IsHitTestVisible="True" MouseRightButtonUp="TextBlock_MouseRightButtonUp" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                    <DataGridTemplateColumn.CellEditingTemplate>
+                        <DataTemplate>
+                            <StackPanel Tag="{Binding Id}">
+                                <TextBlock Text="Press Enter to accept or Escape to cancel changes." Background="#FFA1D8A3" IsHitTestVisible="False" />
+                                <TextBox Name="CommentTB" Height="100" Width="Auto" TextWrapping="Wrap" SpellCheck.IsEnabled="True"
+                                         IsEnabled="{Binding IsCommentReadOnly, Converter={StaticResource negateValue}}" Text="{Binding doorComment}"
+                                         FontFamily="{Binding Source={x:Static properties:Settings.Default}, Path=ScheduleFont.FontFamily.Name}"
+                                         FontSize="{Binding Source={x:Static properties:Settings.Default}, Path=ScheduleFont, Converter={StaticResource sizeConverter}}" />
+                                <ComboBox Name="commentCB" ItemsSource="{Binding Source={StaticResource _cmmntslst}, Path=theList}" SelectionChanged="commentCB_SelectionChanged">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding}" Margin="0,1,0,1" Padding="2" TextWrapping="Wrap" Background="#FF95CAEE"
+                                         FontFamily="{Binding Source={x:Static properties:Settings.Default}, Path=ScheduleFont.FontFamily.Name}"
+                                         FontSize="{Binding Source={x:Static properties:Settings.Default}, Path=ScheduleFont, Converter={StaticResource sizeConverter}}" />
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellEditingTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Resources>
+            <DataGrid.RowHeaderTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding}" Background="Transparent" TextAlignment="Center" MinWidth="40" Width="Auto"
+                               FontFamily="{Binding Source={x:Static properties:Settings.Default}, Path=ScheduleFont.FontFamily.Name}"
+                               FontSize="{Binding Source={x:Static properties:Settings.Default}, Path=ScheduleFont, Converter={StaticResource sizeConverter}}"/>
+                </DataTemplate>
+            </DataGrid.RowHeaderTemplate>
+            <DataGrid.RowHeaderStyle>
+                <Style TargetType="DataGridRowHeader">
+                    <Setter Property="Background" >
+                        <Setter.Value>
+                            <LinearGradientBrush EndPoint="1,0.5" MappingMode="RelativeToBoundingBox" StartPoint="0,0.5">
+                                <GradientStop Color="#FF64CF3C" Offset="0"/>
+                                <GradientStop Color="White" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Setter.Value>
+                    </Setter>
+                    <Setter Property="BorderBrush" Value="Black" />
+                    <Setter Property="BorderThickness" Value="0,0,1,1"/>
+                    <Setter Property="Content" Value="{Binding doorNumber}" />
+                    <Setter Property="ContextMenu" Value="{StaticResource RowContextMenu}" />
+                </Style>
+            </DataGrid.RowHeaderStyle>
+            <DataGrid.RowDetailsTemplate>
+                <DataTemplate>
+                    <Grid Height="Auto" Background="#FFE5F1FB" >
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <TextBlock Style="{StaticResource ExtendedDataTextBlockStyle}" Text="Phase Demolished" Margin="2,0,10,0" Grid.Column="0" Grid.Row="0" />
+                        <TextBlock Style="{StaticResource ExtendedDataTextBlockStyle}" Text="Phase Created" Margin="2,0,10,0" Grid.Column="0" Grid.Row="1" />
+                        <TextBlock Style="{StaticResource ExtendedDataTextBlockStyle}" Text="Type Name" Margin="2,0,10,0" Grid.Column="0" Grid.Row="2" />
+                        <TextBlock Style="{StaticResource ExtendedDataTextBlockStyle}" Text="Family Name" Margin="2,0,10,0" Grid.Column="0" Grid.Row="3" />
+                        <TextBlock Style="{StaticResource ExtendedDataTextBlockStyle}" Text="Size" Margin="2,0,10,0" Grid.Column="0" Grid.Row="4" />
+                        <TextBlock Style="{StaticResource ExtendedDataTextBlockStyle}" Text="{Binding phaseDemolished}" Grid.Column="1" Grid.Row="0" />
+                        <TextBlock Style="{StaticResource ExtendedDataTextBlockStyle}" Text="{Binding phaseCreated}" Grid.Column="1" Grid.Row="1" />
+                        <TextBlock Style="{StaticResource ExtendedDataTextBlockStyle}" Text="{Binding typeName}" Grid.Column="1" Grid.Row="2" />
+                        <TextBlock Style="{StaticResource ExtendedDataTextBlockStyle}" Text="{Binding familyName}" Grid.Column="1" Grid.Row="3" />
+                        <TextBlock Style="{StaticResource ExtendedDataTextBlockStyle}" Text="{Binding size}" Grid.Column="1" Grid.Row="4" />
+
+                        <TextBlock Style="{StaticResource ExtendedDataTextBlockStyle}" Text="To Room" Margin="20,0,10,0" Grid.Column="2" Grid.Row="0" />
+                        <TextBlock Style="{StaticResource ExtendedDataTextBlockStyle}" Text="From Room" Margin="20,0,10,0" Grid.Column="2" Grid.Row="1" />
+                        <TextBlock Style="{StaticResource ExtendedDataTextBlockStyle}" Text="Host Level" Margin="20,0,10,0" Grid.Column="2" Grid.Row="2" />
+                        <TextBlock Style="{StaticResource ExtendedDataTextBlockStyle}" Text="Is Keyed" Margin="20,0,10,0" Grid.Column="2" Grid.Row="3" />
+                        <TextBlock Style="{StaticResource ExtendedDataTextBlockStyle}" Text="{Binding toRoom}" Grid.Column="3" Grid.Row="0" />
+                        <TextBlock Style="{StaticResource ExtendedDataTextBlockStyle}" Text="{Binding fromRoom}" Grid.Column="3" Grid.Row="1" />
+                        <TextBlock Style="{StaticResource ExtendedDataTextBlockStyle}" Text="{Binding hostlevel}" Grid.Column="3" Grid.Row="2" />
+                        <TextBlock Style="{StaticResource ExtendedDataTextBlockStyle}" Text="{Binding key, Converter={StaticResource _keystateconverter}}" Grid.Column="3" Grid.Row="3" />
+                    </Grid>
+                </DataTemplate>
+            </DataGrid.RowDetailsTemplate>
+        </DataGrid>
+    </DockPanel>
+</Window>

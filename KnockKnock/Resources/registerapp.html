@@ -1,0 +1,83 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<title>Register Application</title>
+</head>
+<body>
+	<div align="center">
+	<table width="976" border="0" cellspacing="0" cellpadding="0" bgcolor="#ffffff">
+		<tr>
+			<td width="169"><a href="http://www.pkhlineworks.ca"><img src="http://www.pkhlineworks.ca/img/logo.gif" alt="PKH Lineworks logo" width="169" height="95" border="0" /></a></td>
+		</tr>
+		<tr>
+			<td colspan="2" height="24">&nbsp;</td>
+		</tr>
+		<tr>
+			<td colspan="2" height="24" bgcolor="#404040">&nbsp;</td>
+		</tr>
+		<tr>
+			<td colspan="2"><img src="http://www.pkhlineworks.ca/img/spacer.gif" width="1" height="1" border="0" /></td>
+		</tr>
+	</table>
+	<table width="976" border="0" cellspacing="0" cellpadding="0">
+		<tr>
+			<td colspan="2">Thank you for purchasing. Your support will help continue development. The final step is to register by submitting the following information. A license will be emailed to you along with instructions on how to activate. If you do not submit this information before the 14 day grace period the program will stop functioning.<br><br></td>
+		</tr>
+		<form name="form1" method="post" action="http://www.pkhlineworks.ca/appregister.php" onsubmit="return ValidateInformation();">
+			<input type="hidden" id="app_name" name="app_name" value="%%%APPNAME%%%" /> <!-- %%%___%%% items are replaced by program. -->
+			<input type="hidden" id="app_ver" name="app_ver" value="%%%APPVERSION%%%" />
+			<input type="hidden" id="hid" name="hid" value="%%%HARDWAREID%%%" />
+		<tr>
+			<td width="976" valign="top" align="left">
+				Your Name: <input type="text" name="visitor" size="35" /><br />
+				Your Email (Must match your Paypal account): <input type="text" name="visitormail" size="35" /><br />
+				Password (NOT your Paypal password): <input type="password" name="pword" size="35" /><br />
+				Verify Password: <input type="password" name="pwordverify" size="35" /><br /><br />
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2" align="center"><input type="submit" name="submit" value="Send" /><br /></td>
+		</tr>
+		</form>
+		<tr>
+			<td colspan="2" height="24" bgcolor="#404040">&nbsp;</td></tr><tr><td colspan="2"><img src="http://www.pkhlineworks.ca/img/spacer.gif" width="1" height="1" /></td>
+		</tr>
+		<tr>
+			<td colspan="2" height="115" bgcolor="#e0e0e0" align="right" valign="bottom" style="padding:0 24px 0 0"><p class="copyright">Copyright PKH Lineworks. All rights reserved.</p></td>
+		</tr>
+		<tr>
+			<td colspan="2" bgcolor="#e0e0e0">&nbsp;</td>
+		</tr>
+	</table>
+	</div>
+	
+	<script type="text/javascript">
+	function ValidateInformation()
+	{
+		var mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+		if(!document.form1.visitormail.value.match(mailformat))
+		{
+			alert("You have entered an invalid email address!");
+			return false;
+		}
+		if(document.form1.pword.value == "" || document.form1.pwordverify.value  == "")
+		{
+			alert("You need to specifiy a password!");
+			return false;
+		}
+		if(document.form1.pword.value != document.form1.pwordverify.value)
+		{
+			alert("Your passwords do not match!");
+			return false;
+		}
+		if(document.form1.visitor.value == "")
+		{
+			alert("You need to enter a name!");
+			return false;
+		}
+		return true;
+	}
+	</script>
+</body>
+</html>
